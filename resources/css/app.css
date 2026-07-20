@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body, .font-sans {
+        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    }
+    
+    /* Apply Times New Roman Italic specifically to italics/emphasis throughout the website */
+    i, em, .italic, [class*="italic"] {
+        font-family: "Times New Roman", Times, Baskerville, Georgia, serif !important;
+        font-style: italic !important;
+    }
+}
+
+/* Prism Glass Design System Utilities (High-End chromatic aberration and rainbow dispersion combo) */
+.glass-panel {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark .glass-panel {
+    background: #1C1C1E !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.45) !important;
+}
+
+/* Prism Glass Card styling (Prism color dispersion borders + active floating shadows) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+        0 10px 30px -10px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.6) !important;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.dark .glass-card {
+    background: rgba(28, 28, 30, 0.45) !important;
+    backdrop-filter: blur(16px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 
+        0 10px 30px -10px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.glass-card:hover {
+    transform: translateY(-8px) scale(1.01) !important;
+    background: rgba(255, 255, 255, 0.55) !important;
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 102, 204, 0.12),
+        0 0 1px 1px rgba(0, 102, 204, 0.1) !important;
+}
+
+.dark .glass-card:hover {
+    background: rgba(36, 36, 40, 0.55) !important;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 2px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Pseudo border element overlay to allow border gradients + rounded corners */
+.glass-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: transparent;
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    transition: background 0.6s ease;
+    z-index: 10;
+}
+
+.glass-card:hover::after {
+    background: linear-gradient(135deg, #ff007f, #7f00ff, #00f0ff, #00ff7f) !important;
+}
+
+/* Prism Glimmer Rainbow Reflection Animation */
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 0, 127, 0.08),
+        rgba(127, 0, 255, 0.12),
+        rgba(0, 240, 255, 0.12),
+        rgba(0, 255, 127, 0.08),
+        transparent
+    );
+    transform: skewX(-25deg);
+    transition: left 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+}
+
+.glass-card:hover::before {
+    left: 180%;
+}
+
+/* Premium Entrance Keyframe Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Global Animation Utility Classes */
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-scale {
+    animation: fadeInScale 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Staggered Delay classes */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
