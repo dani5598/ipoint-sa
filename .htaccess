@@ -1,17 +1,20 @@
-# On Hostinger the web root is public_html, but this Laravel app's real entry point
-# is public/index.php. This file transparently routes every request into public/
-# so the domain serves the app. Because every path is forced through public/,
-# the app source (app/, config/, vendor/, .env, etc.) is NOT reachable from the web.
+# Hostinger serves this domain from public_html, but this Laravel app's real entry
+# point is public/index.php. These rules route every request into public/ so the
+# domain serves the app, while keeping app source (app/, config/, vendor/, .env)
+# unreachable from the web (everything is funneled through public/).
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Let ACME / SSL domain-validation checks through untouched.
+    # Let SSL / ACME domain-validation requests pass through untouched.
     RewriteRule ^\.well-known/ - [L]
 
-    # Everything else -> public/<same-path>
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+    # Site root -> Laravel front controller (NOT the public/ directory, which 403s).
+    RewriteRule ^$ public/index.php [L]
 
-# Fallback index if mod_rewrite is unavailable for any reason.
-DirectoryIndex public/index.php index.php
+    # Real static files under public/ (build assets, uploads, favicon) -> serve directly.
+    RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+    RewriteRule ^ public%{REQUEST_URI} [L]
+
+    # Everything else -> Laravel front controller. Laravel reads the original URI and routes.
+    RewriteRule ^ public/index.php [L]
+</IfModule>
