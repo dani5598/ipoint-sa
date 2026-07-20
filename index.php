@@ -13,6 +13,13 @@ if (file_exists($maintenance = __DIR__.'/storage/framework/maintenance.php')) {
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 
+// composer.json ships as composer.json.dist so Hostinger's Git deploy skips its
+// (always-failing) composer build step. Laravel's getNamespace() still needs a
+// real composer.json, so materialize it here on first request.
+if (! is_file(__DIR__.'/composer.json') && is_file(__DIR__.'/composer.json.dist')) {
+    @copy(__DIR__.'/composer.json.dist', __DIR__.'/composer.json');
+}
+
 // Bootstrap Laravel and handle the request...
 /** @var Application $app */
 $app = require_once __DIR__.'/bootstrap/app.php';
