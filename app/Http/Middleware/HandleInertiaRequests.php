@@ -36,7 +36,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'categories' => Category::orderBy('nav_order')->get(),
+            // Guard against the categories table not existing yet (e.g. before the
+            // one-time /__setup migration runs) so the app can still bootstrap.
+            'categories' => rescue(fn () => Category::orderBy('nav_order')->get(), collect(), false),
             'cart' => session()->get('cart', []),
             'compareCount' => count($request->session()->get('compare', [])),
             'hereApiKey' => env('HERE_API_KEY', ''),
