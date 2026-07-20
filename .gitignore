@@ -13,16 +13,18 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
 /public/hot
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
 /database/*.sqlite
 /database/*.sqlite-journal
 /ipointapple-hostinger.zip
 .env.hostinger
+
+# NOTE: vendor/ and public/build/ are intentionally COMMITTED so Hostinger's
+# Git tool can deploy a runnable app without composer/npm (no SSH). Rebuild
+# public/build with `npm run build` after front-end changes and re-commit.
 Homestead.json
 Homestead.yaml
 Thumbs.db
