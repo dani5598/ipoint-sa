@@ -4,6 +4,26 @@ import { Search, ShoppingBag, User, X, Menu, Settings, LogOut, Store, Truck, Map
 import MegaMenu from './MegaMenu';
 import CartDrawer from './CartDrawer';
 
+// Apple glyph as an inline SVG — the  private-use character does not render off Apple devices.
+const AppleIcon = (props) => (
+    <svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true" {...props}>
+        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+    </svg>
+);
+
+// Top-level menu. Items with a `slug` open the category MegaMenu on hover.
+const MENU_ITEMS = [
+    { label: 'iPhone', href: '/category/iphone', slug: 'iphone' },
+    { label: 'iPad', href: '/category/ipad', slug: 'ipad' },
+    { label: 'Mac', href: '/category/mac', slug: 'mac' },
+    { label: 'Watch', href: '/category/watch', slug: 'watch' },
+    { label: 'AirPods', href: '/category/airpods', slug: 'airpods' },
+    { label: 'Accessories', href: '/category/accessories', slug: 'accessories' },
+    { label: 'Compare', href: '/compare' },
+    { label: 'Services', href: '/services' },
+    { label: 'Exchange', href: '/services' },
+];
+
 // Live Order Tracking Map Component (shared with account portal)
 function TrackingMap({ hereApiKey, city }) {
     const mapRef = useRef(null);
@@ -119,6 +139,7 @@ export default function Navigation() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     // Pickup & Live Tracking states
     const [isStoreModalOpen, setIsStoreModalOpen] = useState(false);
@@ -235,155 +256,90 @@ export default function Navigation() {
 
     return (
         <>
-            <header className="fixed top-0 left-0 right-0 z-40 glass-panel font-sans shadow-sm">
+            <header className="fixed top-0 left-0 right-0 z-40 bg-black text-white font-sans">
 
-                {/* 0. Slim Utility Bar (§2.1) */}
-                <div className="bg-[#1D1D1F] text-gray-300 text-[10px] sm:text-[11px]">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 h-8 flex items-center justify-end space-x-4 sm:space-x-6">
-                        <button onClick={() => setIsStoreModalOpen(true)} className="hidden sm:flex items-center space-x-1 hover:text-white transition-colors">
-                            <MapPin className="w-3 h-3" />
-                            <span>Store Locator</span>
-                        </button>
-                        <Link href="/apple-product-repair" className="flex items-center space-x-1 hover:text-white transition-colors">
-                            <Wrench className="w-3 h-3" />
-                            <span>Book a Repair</span>
-                        </Link>
-                        <Link href="/compare" className="flex items-center space-x-1 hover:text-white transition-colors">
-                            <Scale className="w-3 h-3" />
-                            <span>Compare{compareCount > 0 ? ` (${compareCount})` : ''}</span>
-                        </Link>
-                    </div>
-                </div>
+                {/* Single black navigation bar */}
+                <div className="max-w-[1700px] mx-auto h-[72px] px-4 sm:px-6 lg:px-8 flex items-center gap-4 lg:gap-5">
 
-                {/* 1. Blue Announcement Bar */}
-                <div className="bg-[#0066CC] text-white text-[10px] sm:text-xs py-2.5 px-4 text-center font-bold tracking-wide transition-colors">
-                    Free delivery & Click and Collect on all orders.
-                </div>
+                    {/* Branding */}
+                    <Link href="/" className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex-shrink-0">
+                        iPoint
+                    </Link>
 
-                {/* 2. Main Navigation Row */}
-                <div className="max-w-7xl mx-auto h-[60px] px-4 sm:px-6 md:px-8 flex items-center justify-between">
-                    
-                    {/* Left: Branding Logo + Partner Badge */}
-                    <div className="flex items-center space-x-3 flex-shrink-0">
-                        <Link href="/" className="text-xl sm:text-2xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight flex items-center">
-                            iPoint
-                        </Link>
-                        <div className="flex items-center space-x-1 border border-gray-300 dark:border-gray-700 rounded-lg px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold text-gray-500 bg-gray-50 dark:bg-gray-850">
-                            <span className="text-gray-900 dark:text-white font-semibold flex items-center leading-none">
-                                <span className="mr-0.5 text-[10px] sm:text-[11px] leading-none select-none"></span>
-                                <span>Premium Partner</span>
-                            </span>
+                    {/* Apple authorisation badges */}
+                    <div className="hidden xl:flex items-center gap-4 flex-shrink-0">
+                        <span className="h-8 w-px bg-white/25" />
+                        <div className="flex items-center gap-2">
+                            <AppleIcon className="w-4 h-4 text-white flex-shrink-0" />
+                            <span className="text-[9px] leading-[1.15] text-white/90 font-medium">Authorised<br />Distributor</span>
+                        </div>
+                        <span className="h-8 w-px bg-white/25" />
+                        <div className="flex items-center gap-2">
+                            <AppleIcon className="w-4 h-4 text-white flex-shrink-0" />
+                            <span className="text-[9px] leading-[1.15] text-white/90 font-medium">Authorised<br />Service Provider</span>
                         </div>
                     </div>
 
-                    {/* Middle: Inline Search Bar */}
-                    <div className="hidden lg:flex items-center space-x-6 flex-1 max-w-xl mx-8 relative z-50" ref={searchRef}>
-                        <div className="w-full relative flex items-center bg-[#F5F5F7] dark:bg-gray-800 rounded-full px-4 py-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-all">
-                            <Search className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
-                            <input 
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => searchQuery.length >= 2 && setIsDropdownOpen(true)}
-                                placeholder="Search"
-                                className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-xs text-[#1D1D1F] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 p-0"
-                            />
-                            {searchQuery && (
-                                <button 
-                                    onClick={() => { setSearchQuery(''); setSearchResults([]); }}
-                                    className="p-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-450 dark:text-gray-400"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Search Results Dropdown Overlay */}
-                        {isDropdownOpen && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1D1D1F] border border-gray-150 dark:border-gray-800 rounded-2xl shadow-xl z-55 max-h-80 overflow-y-auto p-4 space-y-3">
-                                {isSearching ? (
-                                    <p className="text-[10px] text-gray-400 animate-pulse font-semibold">Searching catalog...</p>
-                                ) : searchResults.length > 0 ? (
-                                    searchResults.map((prod) => (
-                                        <Link 
-                                            key={prod.id}
-                                            href={`/products/${prod.slug}`}
-                                            onClick={() => setIsDropdownOpen(false)}
-                                            className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition-colors"
-                                        >
-                                            <img src={prod.image_path} alt={prod.name} className="w-8 h-8 object-contain bg-white p-0.5 border border-gray-100 rounded-lg flex-shrink-0" />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-bold text-gray-800 dark:text-white truncate">{prod.name}</p>
-                                                <p className="text-[9px] text-[#0066CC] font-semibold">R {parseFloat(prod.base_price).toLocaleString()}</p>
-                                            </div>
-                                        </Link>
-                                    ))
-                                ) : (
-                                    <p className="text-[10px] text-gray-400 py-2">No matching products found.</p>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Right: Selectors, Profile & Shopping Cart */}
-                    <div className="flex items-center space-x-5 flex-shrink-0 text-xs text-[#1D1D1F] dark:text-gray-200">
-                        
-                        {/* Pickup Branch Selector */}
-                        <div className="hidden sm:flex items-center space-x-2">
-                            <Store className="w-4 h-4 text-gray-450 dark:text-gray-400 stroke-[1.5]" />
-                            <div className="flex flex-col text-left text-[11px] leading-tight">
-                                <span className="text-gray-400 font-normal">Pickup</span>
-                                <button 
-                                    onClick={() => setIsStoreModalOpen(true)}
-                                    className="text-[#0066CC] hover:underline font-bold text-[11px] mt-0.5 text-left flex items-center"
-                                >
-                                    {selectedStore || 'Select a Store'}
-                                    <span className="ml-1 text-[9px] font-normal leading-none font-sans select-none">{`>`}</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Track Order Selector */}
-                        <div className="hidden sm:flex items-center space-x-2">
-                            <Truck className="w-4 h-4 text-gray-450 dark:text-gray-400 stroke-[1.5]" />
-                            <div className="flex flex-col text-left text-[11px] leading-tight">
-                                <span className="text-gray-400 font-normal">Track Order</span>
-                                <button 
-                                    onClick={() => {
-                                        setTrackOrderId('');
-                                        setTrackOrderResult(null);
-                                        setTrackingError(null);
-                                        setIsTrackingModalOpen(true);
-                                    }}
-                                    className="text-[#0066CC] hover:underline font-bold text-[11px] mt-0.5 text-left flex items-center"
-                                >
-                                    <span>Track now</span>
-                                    <span className="ml-1 text-[9px] font-normal leading-none font-sans select-none">{`>`}</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Profile Account Portal menu */}
-                        <div className="relative" ref={profileRef}>
-                            <button 
-                                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-850 text-gray-700 dark:text-gray-200 focus:outline-none transition-colors"
+                    {/* Main menu */}
+                    <nav className="hidden lg:flex items-center gap-3 xl:gap-5 flex-1 justify-center text-[13px] font-medium">
+                        {MENU_ITEMS.map((item) => (
+                            <div
+                                key={item.label}
+                                className="relative"
+                                onMouseEnter={() => setHoveredCategory(item.slug || null)}
                             >
-                                <User className="w-5 h-5 stroke-[1.5]" />
+                                <Link
+                                    href={item.href}
+                                    className="text-white/90 hover:text-white transition-colors whitespace-nowrap"
+                                >
+                                    {item.label}
+                                    {item.label === 'Compare' && compareCount > 0 ? ` (${compareCount})` : ''}
+                                </Link>
+                            </div>
+                        ))}
+                    </nav>
+
+                    {/* Right: Locate Reseller, search, account, cart */}
+                    <div className="flex items-center gap-1.5 sm:gap-2 ml-auto lg:ml-0 flex-shrink-0">
+
+                        <button
+                            onClick={() => setIsStoreModalOpen(true)}
+                            className="hidden sm:inline-flex flex-col items-center justify-center text-center bg-[#7CBA3F] hover:bg-[#6CA834] text-white text-[12px] font-bold leading-[1.15] px-5 py-2 rounded-md transition-colors"
+                        >
+                            <span>Locate</span>
+                            <span>Reseller</span>
+                        </button>
+
+                        {/* Search toggle */}
+                        <button
+                            onClick={() => setIsSearchOpen((open) => !open)}
+                            aria-label="Search"
+                            className="p-2 rounded-full hover:bg-white/10 text-white transition-colors focus:outline-none"
+                        >
+                            {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+                        </button>
+
+                        {/* Account portal */}
+                        <div className="relative" ref={profileRef}>
+                            <button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                aria-label="Account"
+                                className="p-2 rounded-full hover:bg-white/10 text-white focus:outline-none transition-colors"
+                            >
+                                <User className="w-5 h-5" />
                             </button>
 
-                            {/* Dropdown Menu options */}
                             {isProfileOpen && (
-                                <div className="absolute right-0 mt-2.5 w-52 bg-white dark:bg-[#1D1D1F] border border-gray-150 dark:border-gray-800 rounded-2xl shadow-xl z-55 py-2">
+                                <div className="absolute right-0 mt-2.5 w-56 bg-white dark:bg-[#1D1D1F] border border-gray-150 dark:border-gray-800 rounded-2xl shadow-xl z-55 py-2 text-[#1D1D1F] dark:text-white">
                                     {auth.user ? (
                                         <>
                                             <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-850">
                                                 <p className="text-[10px] text-gray-400 font-bold uppercase">Signed in as</p>
                                                 <p className="text-xs font-bold text-gray-800 dark:text-white truncate mt-0.5">{auth.user.name}</p>
                                             </div>
-                                            
+
                                             {auth.user.is_admin && (
-                                                <Link 
+                                                <Link
                                                     href={route('admin.dashboard')}
                                                     className="px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-gray-700 dark:text-gray-200 font-semibold"
                                                 >
@@ -392,31 +348,23 @@ export default function Navigation() {
                                                 </Link>
                                             )}
 
-                                            <Link 
+                                            <Link
                                                 href={route('profile.edit')}
                                                 className="px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-gray-700 dark:text-gray-200 font-semibold"
                                             >
                                                 <User className="w-4 h-4 text-gray-400" />
                                                 <span>My Account / Portal</span>
                                             </Link>
-
-                                            <button 
-                                                onClick={handleLogout}
-                                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-[#E30000] border-t border-gray-100 dark:border-gray-855 mt-1 font-bold"
-                                            >
-                                                <LogOut className="w-4 h-4" />
-                                                <span>Log Out</span>
-                                            </button>
                                         </>
                                     ) : (
                                         <>
-                                            <Link 
+                                            <Link
                                                 href={route('login')}
                                                 className="px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 block text-gray-800 dark:text-gray-200 font-bold"
                                             >
                                                 Sign In
                                             </Link>
-                                            <Link 
+                                            <Link
                                                 href={route('register')}
                                                 className="px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 block text-gray-800 dark:text-gray-200 font-bold"
                                             >
@@ -424,65 +372,140 @@ export default function Navigation() {
                                             </Link>
                                         </>
                                     )}
+
+                                    {/* Utilities kept accessible from the account menu */}
+                                    <div className="border-t border-gray-100 dark:border-gray-850 mt-1 pt-1">
+                                        <button
+                                            onClick={() => { setIsProfileOpen(false); setIsStoreModalOpen(true); }}
+                                            className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-gray-700 dark:text-gray-200 font-semibold"
+                                        >
+                                            <Store className="w-4 h-4 text-gray-400" />
+                                            <span>Pickup: {selectedStore || 'Select Store'}</span>
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setIsProfileOpen(false);
+                                                setTrackOrderId('');
+                                                setTrackOrderResult(null);
+                                                setTrackingError(null);
+                                                setIsTrackingModalOpen(true);
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-gray-700 dark:text-gray-200 font-semibold"
+                                        >
+                                            <Truck className="w-4 h-4 text-gray-400" />
+                                            <span>Track Order</span>
+                                        </button>
+                                        <Link
+                                            href="/apple-product-repair"
+                                            className="px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-gray-700 dark:text-gray-200 font-semibold"
+                                        >
+                                            <Wrench className="w-4 h-4 text-gray-400" />
+                                            <span>Book a Repair</span>
+                                        </Link>
+                                    </div>
+
+                                    {auth.user && (
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-855 flex items-center space-x-2.5 text-[#E30000] border-t border-gray-100 dark:border-gray-855 mt-1 font-bold"
+                                        >
+                                            <LogOut className="w-4 h-4" />
+                                            <span>Log Out</span>
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
 
                         {/* Cart Trigger */}
-                        <button 
+                        <button
                             onClick={() => setIsCartOpen(true)}
-                            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-855 text-gray-700 dark:text-gray-200 relative focus:outline-none transition-colors"
+                            aria-label="Cart"
+                            className="p-2 rounded-full hover:bg-white/10 text-white relative focus:outline-none transition-colors"
                         >
-                            <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
+                            <ShoppingBag className="w-5 h-5" />
                             {cartCount > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 bg-[#0066CC] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-90 border border-white dark:border-[#1D1D1F]">
+                                <span className="absolute -top-0.5 -right-0.5 bg-[#7CBA3F] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-black">
                                     {cartCount}
                                 </span>
                             )}
                         </button>
 
                         {/* Mobile Menu Toggle */}
-                        <button 
+                        <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="lg:hidden p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-850 text-gray-700 dark:text-gray-200 focus:outline-none"
+                            aria-label="Menu"
+                            className="lg:hidden p-2 rounded-full hover:bg-white/10 text-white focus:outline-none"
                         >
                             <Menu className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
 
-                {/* 3. Category Menus strip */}
-                <div className="hidden lg:block border-t border-[#E5E5E7] dark:border-gray-800/80 bg-transparent">
-                    <nav className="max-w-7xl mx-auto h-[44px] px-8 flex items-center justify-center space-x-8 text-[11px] font-bold tracking-wider text-gray-700 dark:text-gray-300">
-                        {categories && categories.map((cat) => (
-                            <div 
-                                key={cat.id}
-                                className="relative"
-                                onMouseEnter={() => setHoveredCategory(cat.slug)}
-                            >
-                                <Link 
-                                    href={`/category/${cat.slug}`}
-                                    className="hover:text-[#0066CC] dark:hover:text-white transition-colors uppercase tracking-wider"
-                                >
-                                    {cat.name}
-                                </Link>
+                {/* Expanding search panel */}
+                {isSearchOpen && (
+                    <div className="border-t border-white/10 bg-black" ref={searchRef}>
+                        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4 relative">
+                            <div className="w-full flex items-center bg-white/10 rounded-full px-4 py-2.5">
+                                <Search className="w-4 h-4 text-white/60 mr-2 flex-shrink-0" />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search products"
+                                    className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-white placeholder-white/50 p-0"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => { setSearchQuery(''); setSearchResults([]); }}
+                                        className="p-0.5 rounded-full hover:bg-white/10 text-white/60"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
                             </div>
-                        ))}
-                    </nav>
-                </div>
+
+                            {isDropdownOpen && (
+                                <div className="absolute left-4 right-4 sm:left-6 sm:right-6 top-full bg-white dark:bg-[#1D1D1F] border border-gray-150 dark:border-gray-800 rounded-2xl shadow-xl z-55 max-h-80 overflow-y-auto p-4 space-y-3">
+                                    {isSearching ? (
+                                        <p className="text-[10px] text-gray-400 animate-pulse font-semibold">Searching catalog...</p>
+                                    ) : searchResults.length > 0 ? (
+                                        searchResults.map((prod) => (
+                                            <Link
+                                                key={prod.id}
+                                                href={`/products/${prod.slug}`}
+                                                onClick={() => { setIsDropdownOpen(false); setIsSearchOpen(false); }}
+                                                className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition-colors"
+                                            >
+                                                <img src={prod.image_path} alt={prod.name} className="w-8 h-8 object-contain bg-white p-0.5 border border-gray-100 rounded-lg flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-bold text-gray-800 dark:text-white truncate">{prod.name}</p>
+                                                    <p className="text-[9px] text-[#0066CC] font-semibold">R {parseFloat(prod.base_price).toLocaleString()}</p>
+                                                </div>
+                                            </Link>
+                                        ))
+                                    ) : (
+                                        <p className="text-[10px] text-gray-400 py-2">No matching products found.</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 {/* MegaMenu Dropdowns */}
                 {hoveredCategory && (
-                    <MegaMenu 
-                        categorySlug={hoveredCategory} 
-                        onLeave={() => setHoveredCategory(null)} 
+                    <MegaMenu
+                        categorySlug={hoveredCategory}
+                        onLeave={() => setHoveredCategory(null)}
                     />
                 )}
             </header>
 
             {/* Mobile Categories Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 top-[136px] z-35 bg-black/95 text-white lg:hidden py-8 px-6 font-sans flex flex-col justify-between">
+                <div className="fixed inset-0 top-[72px] z-35 bg-black/95 text-white lg:hidden py-8 px-6 font-sans flex flex-col justify-between overflow-y-auto">
                     <div className="space-y-6">
                         <div className="flex items-center bg-gray-900 rounded-xl px-3.5 py-2">
                             <Search className="w-4 h-4 text-gray-400 mr-2" />

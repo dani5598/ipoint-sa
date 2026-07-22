@@ -152,7 +152,7 @@ export default function MegaMenu({ categorySlug, onLeave }) {
 
     return (
         <div 
-            className="absolute left-0 right-0 top-[141px] glass-panel shadow-xl transition-all duration-300 ease-out z-50 font-sans border-t border-[#E5E5E7] dark:border-gray-800/80"
+            className="absolute left-0 right-0 top-[72px] glass-panel shadow-xl transition-all duration-300 ease-out z-50 font-sans border-t border-[#E5E5E7] dark:border-gray-800/80"
             onMouseLeave={onLeave}
         >
             <div className="max-w-7xl mx-auto py-10 px-8 grid grid-cols-4 gap-8">

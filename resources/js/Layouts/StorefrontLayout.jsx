@@ -26,7 +26,7 @@ export default function StorefrontLayout({ children }) {
             <Navigation />
 
             {/* Main Content Area */}
-            <main className="flex-grow pt-[172px]">
+            <main className="flex-grow pt-[72px]">
                 {children}
             </main>
 

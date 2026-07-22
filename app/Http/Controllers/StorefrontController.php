@@ -25,17 +25,6 @@ class StorefrontController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $bentoBanners = Banner::where('is_active', true)
-            ->where('position', 'bento')
-            ->orderBy('sort_order')
-            ->take(3)
-            ->get();
-
-        $zigzagBanners = Banner::where('is_active', true)
-            ->where('position', 'zigzag')
-            ->orderBy('sort_order')
-            ->get();
-
         $featuredProducts = Product::where('is_featured', true)
             ->with(['variants.color', 'variants.size'])
             ->take(8)
@@ -48,40 +37,34 @@ class StorefrontController extends Controller
 
         $newProducts = Product::where('is_new', true)
             ->with(['variants.color', 'variants.size'])
-            ->take(8)
-            ->get();
-
-        $whatsNewBanners = Banner::where('is_active', true)
-            ->where('position', 'whats_new')
-            ->orderBy('sort_order')
+            ->take(10)
             ->get();
 
         // Admin-managed "Latest Offers" carousel (Redesign Guide §4.4)
         $offers = Offer::live()->orderBy('sort_order')->orderBy('id')->get();
 
-        // Load all active categories and their products to build dynamic story shelf slides on the homepage
-        $categoriesWithProducts = Category::orderBy('nav_order')
+        // Tabbed "Product Categories" browser — 3 products per category tab
+        $categoryTabs = Category::orderBy('nav_order')
             ->get()
             ->map(function ($cat) {
                 $cat->products = Product::where('category_id', $cat->id)
                     ->with(['variants.color', 'variants.size'])
-                    ->orderBy('created_at', 'desc')
-                    ->take(10)
+                    ->orderByDesc('is_featured')
+                    ->orderByDesc('created_at')
+                    ->take(3)
                     ->get();
                 return $cat;
             })
-            ->filter(fn($cat) => $cat->products->isNotEmpty());
+            ->filter(fn($cat) => $cat->products->isNotEmpty())
+            ->values();
 
         return Inertia::render('Storefront/Home', [
             'heroBanners' => $heroBanners,
-            'bentoBanners' => $bentoBanners,
-            'zigzagBanners' => $zigzagBanners,
             'featuredProducts' => $featuredProducts,
             'promoProducts' => $promoProducts,
             'newProducts' => $newProducts,
-            'whatsNewBanners' => $whatsNewBanners,
             'offers' => $offers,
-            'categoriesWithProducts' => $categoriesWithProducts->values(),
+            'categoryTabs' => $categoryTabs,
         ]);
     }
 
