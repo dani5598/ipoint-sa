@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage, useForm } from '@inertiajs/react';
 import { Search, ShoppingBag, User, X, Menu, Settings, LogOut, Store, Truck, MapPin, ShieldCheck, Clock, XCircle, Wrench, Scale } from 'lucide-react';
-import MegaMenu from './MegaMenu';
 import CartDrawer from './CartDrawer';
 
 // Apple glyph as an inline SVG — the  private-use character does not render off Apple devices.
@@ -11,14 +10,14 @@ const AppleIcon = (props) => (
     </svg>
 );
 
-// Top-level menu. Items with a `slug` open the category MegaMenu on hover.
+// Top-level menu — a single flat row of links, no dropdowns.
 const MENU_ITEMS = [
-    { label: 'iPhone', href: '/category/iphone', slug: 'iphone' },
-    { label: 'iPad', href: '/category/ipad', slug: 'ipad' },
-    { label: 'Mac', href: '/category/mac', slug: 'mac' },
-    { label: 'Watch', href: '/category/watch', slug: 'watch' },
-    { label: 'AirPods', href: '/category/airpods', slug: 'airpods' },
-    { label: 'Accessories', href: '/category/accessories', slug: 'accessories' },
+    { label: 'iPhone', href: '/category/iphone' },
+    { label: 'iPad', href: '/category/ipad' },
+    { label: 'Mac', href: '/category/mac' },
+    { label: 'Watch', href: '/category/watch' },
+    { label: 'AirPods', href: '/category/airpods' },
+    { label: 'Accessories', href: '/category/accessories' },
     { label: 'Compare', href: '/compare' },
     { label: 'Services', href: '/services' },
     { label: 'Exchange', href: '/services' },
@@ -135,7 +134,6 @@ function TrackingMap({ hereApiKey, city }) {
 
 export default function Navigation() {
     const { categories, cart, auth, hereApiKey, compareCount = 0 } = usePage().props;
-    const [hoveredCategory, setHoveredCategory] = useState(null);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -280,35 +278,22 @@ export default function Navigation() {
                         </div>
                     </div>
 
-                    {/* Main menu */}
+                    {/* Main menu — flat links, no dropdowns */}
                     <nav className="hidden lg:flex items-center gap-3 xl:gap-5 flex-1 justify-center text-[13px] font-medium">
                         {MENU_ITEMS.map((item) => (
-                            <div
+                            <Link
                                 key={item.label}
-                                className="relative"
-                                onMouseEnter={() => setHoveredCategory(item.slug || null)}
+                                href={item.href}
+                                className="text-white/90 hover:text-white transition-colors whitespace-nowrap"
                             >
-                                <Link
-                                    href={item.href}
-                                    className="text-white/90 hover:text-white transition-colors whitespace-nowrap"
-                                >
-                                    {item.label}
-                                    {item.label === 'Compare' && compareCount > 0 ? ` (${compareCount})` : ''}
-                                </Link>
-                            </div>
+                                {item.label}
+                                {item.label === 'Compare' && compareCount > 0 ? ` (${compareCount})` : ''}
+                            </Link>
                         ))}
                     </nav>
 
-                    {/* Right: Locate Reseller, search, account, cart */}
+                    {/* Right: search, account, cart */}
                     <div className="flex items-center gap-1.5 sm:gap-2 ml-auto lg:ml-0 flex-shrink-0">
-
-                        <button
-                            onClick={() => setIsStoreModalOpen(true)}
-                            className="hidden sm:inline-flex flex-col items-center justify-center text-center bg-[#7CBA3F] hover:bg-[#6CA834] text-white text-[12px] font-bold leading-[1.15] px-5 py-2 rounded-md transition-colors"
-                        >
-                            <span>Locate</span>
-                            <span>Reseller</span>
-                        </button>
 
                         {/* Search toggle */}
                         <button
@@ -494,13 +479,6 @@ export default function Navigation() {
                     </div>
                 )}
 
-                {/* MegaMenu Dropdowns */}
-                {hoveredCategory && (
-                    <MegaMenu
-                        categorySlug={hoveredCategory}
-                        onLeave={() => setHoveredCategory(null)}
-                    />
-                )}
             </header>
 
             {/* Mobile Categories Menu Overlay */}

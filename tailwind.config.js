@@ -3,6 +3,11 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    // Class strategy so the `dark:` utilities and the custom `.dark .glass-*`
+    // rules in app.css key off the same signal. The class is set from the
+    // browser's prefers-color-scheme in app.blade.php.
+    darkMode: 'class',
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',

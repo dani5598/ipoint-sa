@@ -5,6 +5,29 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        {{-- Render native UI (scrollbars, form controls) to match the active scheme --}}
+        <meta name="color-scheme" content="light dark">
+
+        {{--
+            Mirror the browser/OS colour scheme onto <html class="dark">.
+            Runs before paint so there is no flash of the wrong theme, and keeps
+            listening so the site flips live when the OS setting changes.
+        --}}
+        <script>
+            (function () {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                var apply = function (isDark) {
+                    document.documentElement.classList.toggle('dark', isDark);
+                };
+                apply(mq.matches);
+                if (mq.addEventListener) {
+                    mq.addEventListener('change', function (e) { apply(e.matches); });
+                } else if (mq.addListener) {
+                    mq.addListener(function (e) { apply(e.matches); });
+                }
+            })();
+        </script>
+
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
