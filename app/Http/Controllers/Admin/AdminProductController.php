@@ -276,20 +276,37 @@ class AdminProductController extends Controller
 
         try {
             $file = $request->file('file');
-            $dir = public_path('uploads/products');
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(10) . '.' . $ext;
 
+            // Prefer a persistent folder ONE LEVEL ABOVE the app root. On Hostinger the
+            // Git deploy replaces public_html (= app root) wholesale, wiping anything
+            // uploaded inside it — the parent domain folder survives every deploy.
+            // Served back via the /media/{path} route.
+            $persistentDir = dirname(base_path()) . '/media/products';
+            if (! is_dir($persistentDir)) {
+                @mkdir($persistentDir, 0755, true);
+            }
+
+            if (is_dir($persistentDir) && is_writable($persistentDir)) {
+                $file->move($persistentDir, $filename);
+
+                return response()->json(['url' => '/media/products/' . $filename]);
+            }
+
+            // Fallback: the web root's uploads folder (works everywhere, but is
+            // replaced on each Git redeploy).
+            $dir = public_path('uploads/products');
             if (! is_dir($dir)) {
                 @mkdir($dir, 0755, true);
             }
 
             if (! is_writable($dir)) {
                 return response()->json([
-                    'error' => 'The uploads/products folder is not writable on the server. Set its permissions to 755.',
+                    'error' => 'Neither the persistent media folder nor uploads/products is writable on the server. Set permissions to 755.',
                 ], 500);
             }
 
-            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
-            $filename = time() . '_' . Str::random(10) . '.' . $ext;
             $file->move($dir, $filename);
 
             return response()->json(['url' => '/uploads/products/' . $filename]);

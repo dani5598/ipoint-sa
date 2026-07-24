@@ -43,6 +43,26 @@ Route::post('/compare/clear', [CompareController::class, 'clear'])->name('compar
 Route::get('/apple-product-repair', [RepairController::class, 'index'])->name('repair.index');
 Route::post('/apple-product-repair/book', [RepairController::class, 'book'])->name('repair.book');
 
+// --- Persistent media (admin uploads stored one level ABOVE the web root so they
+//     survive Git redeploys that replace public_html; see AdminProductController). ---
+Route::get('/media/{path}', function (string $path) {
+    $base = realpath(dirname(base_path()) . '/media');
+    abort_if($base === false, 404);
+
+    // realpath() resolves any ../ tricks; then require the result to stay inside $base.
+    $file = realpath($base . DIRECTORY_SEPARATOR . $path);
+    abort_if(
+        $file === false
+        || ! str_starts_with($file, $base . DIRECTORY_SEPARATOR)
+        || ! is_file($file),
+        404
+    );
+
+    return response()->file($file, [
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->where('path', '[A-Za-z0-9_\-\/\.]+')->name('media.show');
+
 // --- Cart Routes ---
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
