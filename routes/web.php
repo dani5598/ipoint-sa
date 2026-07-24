@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 // --- Storefront Routes ---
 Route::get('/', [StorefrontController::class, 'home'])->name('storefront.home');
 Route::get('/category/{slug}', [StorefrontController::class, 'category'])->name('storefront.category');
+Route::get('/products', [StorefrontController::class, 'products'])->name('storefront.products');
 Route::get('/products/{slug}', [StorefrontController::class, 'product'])->name('storefront.product');
 Route::post('/products/{id}/reviews', [StorefrontController::class, 'storeReview'])->name('storefront.product.reviews.store');
 Route::get('/search', [SearchController::class, 'search'])->name('storefront.search');

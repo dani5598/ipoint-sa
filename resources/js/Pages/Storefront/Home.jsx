@@ -261,6 +261,17 @@ export default function Home({
                                         </Link>
                                     ))}
                                 </div>
+
+                                {/* View the full catalogue across every category */}
+                                <div className="mt-10 flex justify-center lg:justify-start">
+                                    <Link
+                                        href="/products"
+                                        className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-[#7CBA3F] text-white text-sm font-semibold hover:bg-[#6ba834] transition-colors"
+                                    >
+                                        View All Products
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

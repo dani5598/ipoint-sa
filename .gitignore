@@ -31,3 +31,6 @@ Thumbs.db
 # Generated at runtime from the .dist copies (kept out to preserve Hostinger build-skip)
 /composer.json
 /package.json
+
+# Plan C: the app serves from the repo root; public/ is only a transient Vite build target
+/public/

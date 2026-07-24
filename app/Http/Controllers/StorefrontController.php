@@ -173,6 +173,25 @@ class StorefrontController extends Controller
     }
 
     /**
+     * Display every product across all categories (the "View All Products" catalog).
+     * Category filtering and sorting are handled client-side for instant response.
+     */
+    public function products()
+    {
+        $products = Product::with(['variants.color', 'variants.size'])
+            ->orderByDesc('is_featured')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $categories = Category::orderBy('nav_order')->get(['id', 'name', 'slug']);
+
+        return Inertia::render('Storefront/AllProducts', [
+            'products' => $products,
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
      * Display product detail page.
      */
     public function product($slug)

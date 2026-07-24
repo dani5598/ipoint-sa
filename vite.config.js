@@ -7,6 +7,9 @@ export default defineConfig({
         laravel({
             input: 'resources/js/app.jsx',
             refresh: true,
+            // App serves from the repo root (index.php: $app->usePublicPath(__DIR__)),
+            // so the dev-server hot file must live at the root, not public/, for @vite to detect it.
+            hotFile: 'hot',
         }),
         react(),
     ],
