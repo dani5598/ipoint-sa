@@ -27,3 +27,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Generated at runtime from the .dist copies (kept out to preserve Hostinger build-skip)
+/composer.json
+/package.json

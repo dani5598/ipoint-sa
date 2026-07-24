@@ -10,6 +10,24 @@ const AppleIcon = (props) => (
     </svg>
 );
 
+// Primary brand logo — a two-tone iPoint wordmark (white "i", blue "Point").
+const IPointLogo = ({ className = '' }) => (
+    <span className={`inline-flex items-baseline font-extrabold tracking-tight leading-none ${className}`}>
+        <span className="text-white">i</span>
+        <span className="text-[#0066CC]">Point</span>
+    </span>
+);
+
+// Apple "Authorised Reseller" badge lockup — Apple glyph + program name inside a bordered chip.
+const AuthorisedResellerLogo = ({ className = '' }) => (
+    <div className={`inline-flex items-center gap-2 rounded-lg border border-white/25 px-2.5 py-1 ${className}`}>
+        <AppleIcon className="w-4 h-4 text-white flex-shrink-0" />
+        <span className="text-[9px] leading-[1.15] text-white/90 font-semibold uppercase tracking-wide">
+            Authorised<br />Reseller
+        </span>
+    </div>
+);
+
 // Top-level menu — a single flat row of links, no dropdowns.
 const MENU_ITEMS = [
     { label: 'iPhone', href: '/category/iphone' },
@@ -18,9 +36,7 @@ const MENU_ITEMS = [
     { label: 'Watch', href: '/category/watch' },
     { label: 'AirPods', href: '/category/airpods' },
     { label: 'Accessories', href: '/category/accessories' },
-    { label: 'Compare', href: '/compare' },
     { label: 'Services', href: '/services' },
-    { label: 'Exchange', href: '/services' },
 ];
 
 // Live Order Tracking Map Component (shared with account portal)
@@ -259,23 +275,15 @@ export default function Navigation() {
                 {/* Single black navigation bar */}
                 <div className="max-w-[1700px] mx-auto h-[72px] px-4 sm:px-6 lg:px-8 flex items-center gap-4 lg:gap-5">
 
-                    {/* Branding */}
-                    <Link href="/" className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex-shrink-0">
-                        iPoint
+                    {/* Logo 1 — iPoint brand wordmark (links home) */}
+                    <Link href="/" aria-label="iPoint home" className="flex-shrink-0">
+                        <IPointLogo className="text-xl sm:text-2xl" />
                     </Link>
 
-                    {/* Apple authorisation badges */}
-                    <div className="hidden xl:flex items-center gap-4 flex-shrink-0">
+                    {/* Logo 2 — Apple Authorised Reseller badge */}
+                    <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
                         <span className="h-8 w-px bg-white/25" />
-                        <div className="flex items-center gap-2">
-                            <AppleIcon className="w-4 h-4 text-white flex-shrink-0" />
-                            <span className="text-[9px] leading-[1.15] text-white/90 font-medium">Authorised<br />Distributor</span>
-                        </div>
-                        <span className="h-8 w-px bg-white/25" />
-                        <div className="flex items-center gap-2">
-                            <AppleIcon className="w-4 h-4 text-white flex-shrink-0" />
-                            <span className="text-[9px] leading-[1.15] text-white/90 font-medium">Authorised<br />Service Provider</span>
-                        </div>
+                        <AuthorisedResellerLogo />
                     </div>
 
                     {/* Main menu — flat links, no dropdowns */}
@@ -287,7 +295,6 @@ export default function Navigation() {
                                 className="text-white/90 hover:text-white transition-colors whitespace-nowrap"
                             >
                                 {item.label}
-                                {item.label === 'Compare' && compareCount > 0 ? ` (${compareCount})` : ''}
                             </Link>
                         ))}
                     </nav>
@@ -512,10 +519,6 @@ export default function Navigation() {
                         <Link href="/apple-product-repair" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-2 text-gray-300">
                             <Wrench className="w-4 h-4" />
                             <span>Book a Repair</span>
-                        </Link>
-                        <Link href="/compare" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center space-x-2 text-gray-300">
-                            <Scale className="w-4 h-4" />
-                            <span>Compare{compareCount > 0 ? ` (${compareCount})` : ''}</span>
                         </Link>
                         <button onClick={() => { setIsMobileMenuOpen(false); setIsStoreModalOpen(true); }} className="flex items-center space-x-2 text-gray-300">
                             <Store className="w-4 h-4" />
