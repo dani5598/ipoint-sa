@@ -12,6 +12,7 @@ use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class AdminProductController extends Controller
@@ -261,22 +262,39 @@ class AdminProductController extends Controller
      */
     public function uploadImage(Request $request)
     {
-        $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
-        ]);
+        // Validate manually and return JSON on failure. Using $request->validate()
+        // would 302-redirect for non-JSON requests, which the uploader's fetch()
+        // can't parse (it surfaces as a generic "Image upload failed").
+        $validator = Validator::make(
+            ['file' => $request->file('file')],
+            ['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp,avif|max:10240'] // up to 10 MB
+        );
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
-            
-            // Move file directly into public directory
-            $file->move(public_path('uploads/products'), $filename);
-            
-            return response()->json([
-                'url' => '/uploads/products/' . $filename
-            ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first('file')], 422);
         }
 
-        return response()->json(['error' => 'No file uploaded.'], 400);
+        try {
+            $file = $request->file('file');
+            $dir = public_path('uploads/products');
+
+            if (! is_dir($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+
+            if (! is_writable($dir)) {
+                return response()->json([
+                    'error' => 'The uploads/products folder is not writable on the server. Set its permissions to 755.',
+                ], 500);
+            }
+
+            $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'jpg');
+            $filename = time() . '_' . Str::random(10) . '.' . $ext;
+            $file->move($dir, $filename);
+
+            return response()->json(['url' => '/uploads/products/' . $filename]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'Upload failed: ' . $e->getMessage()], 500);
+        }
     }
 }

@@ -29,4 +29,12 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 // directory. Keeps asset() URLs and public_path() uploads resolving correctly.
 $app->usePublicPath(__DIR__);
 
+// Prefer an .env stored one level ABOVE the web root. Hostinger's Git deploy
+// replaces public_html on every deploy (wiping any .env inside it), but the
+// parent domain folder is left untouched — so a .env there persists. Falls back
+// to public_html/.env when the parent copy isn't present.
+if (is_file(dirname(__DIR__).'/.env')) {
+    $app->useEnvironmentPath(dirname(__DIR__));
+}
+
 $app->handleRequest(Request::capture());
